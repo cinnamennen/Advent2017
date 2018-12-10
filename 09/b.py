@@ -26,10 +26,12 @@ for line in data:
     token = line
     # Cancel out according to !
     token = re.sub(r"(!.)", '', token)
-    token = re.sub(r"(<.*?>)", '', token)
-    token = re.sub(r"(,,+)", '', token)
+    token = re.findall(r"(<.*?>)", token)
+
+    token = [len(t) -2 for t in token]
+    # token = re.sub(r"(,,+)", '', token)
     # token = re.sub(r"(,)", '', token)
-    new_data.append(score(token))
+    new_data.append(sum(token))
 
 data = new_data
 
