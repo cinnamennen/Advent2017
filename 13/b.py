@@ -1,3 +1,4 @@
+import itertools
 import pprint
 import re
 
@@ -24,7 +25,8 @@ def get_firewall_position(height: int, time: int):
 
 def main():
     data = get_input()
-    print(sum(pos * data[pos] for pos in data if get_firewall_position(data[pos], pos) == 0)
+    print(next(wait for wait in itertools.count() if not any(get_firewall_position(data[pos], wait + pos) == 0 for pos
+                                                             in data))
 )
 
 

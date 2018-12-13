@@ -1,11 +1,5 @@
-import pprint
 from collections import deque
 from functools import reduce
-
-pp = pprint.PrettyPrinter(indent=4)
-
-file = 'y.txt'
-read = [_.strip() for _ in open(file).readlines()][0]
 
 
 def formatting(data):
@@ -26,8 +20,8 @@ def r(p, ss, k, data):
     return p, ss, k
 
 
-def kh(input):
-    d = formatting(input)
+def kh(i):
+    d = formatting(i)
 
     knot = deque(range(256))
 
@@ -41,6 +35,3 @@ def kh(input):
     # print(temp)
     temp = "".join(temp)
     return (temp)
-
-
-print(kh(read))
