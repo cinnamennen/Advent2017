@@ -26,7 +26,7 @@ def main():
     for r, *n in data:
         for e in n:
             G.add_edge(r, e)
-    print(len(nx.node_connected_component(G, '0')))
+    print((nx.number_connected_components(G)))
 
 
 
