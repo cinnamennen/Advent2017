@@ -34,12 +34,20 @@ def generate(previous, factor):
 
 # @memoized
 def next_a(previous):
-    return generate(previous, a_factor)
+    a = previous
+    a = generate(a, a_factor)
+    while a % 4 != 0:
+        a = generate(a, a_factor)
+    return a
 
 
 # @memoized
 def next_b(previous):
-    return generate(previous, b_factor)
+    b = previous
+    b = generate(b, b_factor)
+    while b % 8 != 0:
+        b = generate(b, b_factor)
+    return b
 
 # @memoized
 def binary_match(a: int, b: int) -> bool:
@@ -58,12 +66,13 @@ def main():
     data = get_input()
     a, b = data
     match = 0
-    for _ in trange(int(4E7)):
+    for _ in trange(int(5E6)):
         a = next_a(a)
         b = next_b(b)
         if binary_match(a, b):
             match += 1
-    print("\n\n\n",match)
+        # print(a,b)
+    print("\n\n\n", match)
 
 
 if __name__ == '__main__':
