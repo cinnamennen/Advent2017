@@ -35,7 +35,7 @@ def run(data: List[str], i: int, registers: dict, last_played: int):
     elif command == 'rcv':
         if get_register_or_value(args[0], r) != 0:
             print("retrieved freq {}".format(l))
-            exit()
+            # exit()
     elif command == 'jgz':
         if get_register_or_value(args[0], r) > 0:
             i -= 1
