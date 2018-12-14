@@ -1,10 +1,10 @@
+from multiprocessing import Queue, pool
 import pprint
-import re
+import queue
 
 from collections import defaultdict
 from typing import Tuple, List
 
-from tqdm import trange
 from string import ascii_lowercase
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -16,14 +16,15 @@ def process_input():
     return data
 
 
-def run(data: List[str], i: int, registers: dict, last_played: int):
+def run(data: List[str], i: int, registers: dict, inq, outq, sent):
     r = registers.copy()
-    l = last_played
+    s = sent
     command, *args = data[i].split(' ')
     i += 1
     if command == 'snd':
-        l = get_register_or_value(args[0], r)
-        # print("played freq {}".format(l))
+        outq.put(get_register_or_value(args[0], r))
+        # print("r{} pushing {}".format(r['p'], get_register_or_value(args[0], r)))
+        s += 1
     elif command == 'set':
         r[args[0]] = get_register_or_value(args[1], r)
     elif command == 'add':
@@ -33,9 +34,8 @@ def run(data: List[str], i: int, registers: dict, last_played: int):
     elif command == 'mod':
         r[args[0]] %= get_register_or_value(args[1], r)
     elif command == 'rcv':
-        if get_register_or_value(args[0], r) != 0:
-            print("retrieved freq {}".format(l))
-            # exit()
+        # print("r{} retrieving".format(r['p']))
+        r[args[0]] = inq.get(timeout=5)
     elif command == 'jgz':
         if get_register_or_value(args[0], r) > 0:
             i -= 1
@@ -43,7 +43,7 @@ def run(data: List[str], i: int, registers: dict, last_played: int):
     else:
         print("couldn't parse {} {}".format(command, args))
 
-    return r, l, i
+    return r, i, s
 
 
 def get_register_or_value(param: str, registers: dict):
@@ -55,16 +55,33 @@ def get_input():
     return data
 
 
+def simulate(p: int, instructions: List[str], i: Queue, o: Queue):
+    sent = 0
+    ic = 0
+
+    registers = defaultdict(lambda: 0)
+    registers['p'] = p
+    while 0 <= ic < len(instructions):
+        # print(registers['p'], end='')
+        # print(i.get_nowait(), o.get_nowait())
+        try:
+            registers, ic, sent = run(instructions, ic, registers, i, o, sent)
+        except queue.Empty:
+            return sent
+
+
 def main():
     data = get_input()
-    registers = defaultdict(lambda: 0)
-    last_played = -1
-    i = 0
-    while 0 <= i < len(data):
-        # print("running {}".format(data[i]))
-        registers, last_played, i = run(data, i, registers, last_played)
-        # pp.pprint(registers)
-        # break
+
+    p = pool.ThreadPool(processes=2)
+
+    q0 = Queue()
+    q1 = Queue()
+
+    p.apply_async(simulate, (0, data, q0, q1))
+    res1 = p.apply_async(simulate, (1, data, q1, q0))
+
+    print(res1.get())
 
 
 if __name__ == '__main__':
