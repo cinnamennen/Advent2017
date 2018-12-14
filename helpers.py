@@ -11,17 +11,23 @@ class memoized(object):
     def __init__(self, func):
         self.func = func
         self.cache = {}
+        self.hits = self.misses = 0
 
     def __call__(self, *args):
         # if not isinstance(args, collections.Hashable):
         #     # uncacheable. a list, for instance.
         #     # better to not cache than blow up.
         #     return self.func(*args)
+        # print("checking", args)
         if args in self.cache:
+            # self.hits += 1
+            # self.success()
             return self.cache[args]
         else:
             value = self.func(*args)
             self.cache[args] = value
+            # self.misses += 1
+            # self.success()
             return value
 
     def __repr__(self):
@@ -31,3 +37,6 @@ class memoized(object):
     def __get__(self, obj, objtype):
         '''Support instance methods.'''
         return functools.partial(self.__call__, obj)
+
+    def success(self):
+        print((self.hits / (self.hits + self.misses)) * 100)
