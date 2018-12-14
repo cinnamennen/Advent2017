@@ -1,6 +1,7 @@
 import pprint
 import re
 from functools import total_ordering
+from collections import Counter
 
 from tqdm import trange
 from helpers import Point, zero_point
@@ -37,27 +38,13 @@ class Particle:
         yield self.acceleration
 
     def __eq__(self, other):
-        return self.position.zero_distance() == other.position.zero_distance() \
-               and self.velocity.zero_distance() == other.velocity.zero_distance() \
-               and self.acceleration.zero_distance() == other.acceleration.zero_distance()
+        return self.position == other.position
 
     def __gt__(self, other):
-        return self.acceleration.zero_distance() > other.acceleration.zero_distance() if \
-            self.acceleration.zero_distance() != other.acceleration.zero_distance() \
-            else self.velocity.zero_distance() > other.velocity.zero_distance() if self.velocity.zero_distance() != \
-                                                                                   other.velocity.zero_distance() \
-            else self.position.zero_distance() > other.position.zero_distance()
+        return self.position > other.position
 
-
-class NilParticle(Particle):
-    def __init__(self, particle: Particle = None):
-        if particle:
-            super().__init__(*particle)
-        else:
-            super().__init__(*(zero_point(3) * 3))
-
-    def tick(self):
-        pass
+    def __hash__(self):
+        return hash(self.position)
 
 
 def process_input():
@@ -75,9 +62,25 @@ def get_input():
 
 
 def main():
-    data = get_input()
-    d = data.index(sorted(data)[0])
-    print(d)
+    particles = get_input()
+
+    timeout = 0
+
+    while timeout < 1000:
+        timeout += 1
+        for p in particles:
+            p.tick()
+        particles.sort()
+
+        c = Counter(particles)
+        particles = []
+        for p, n in c.items():
+            if n < 2:
+                particles.append(p)
+            if n > 1:
+                timeout = 0
+
+    print(len(particles))
 
 
 if __name__ == '__main__':

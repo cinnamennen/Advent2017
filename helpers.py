@@ -1,5 +1,5 @@
 import collections
-import functools
+from functools import total_ordering
 
 
 class Memoized(object):
@@ -41,7 +41,7 @@ class Memoized(object):
     def success(self):
         print((self.hits / (self.hits + self.misses)) * 100)
 
-
+@total_ordering
 class Point:
     def __init__(self, *args):
         ints = list(map(lambda v: isinstance(v, int), args))
@@ -75,13 +75,22 @@ class Point:
         return hash(repr(self))
 
     def __iter__(self):
-        return iter(self.values)
+        yield from self.values
 
     def __bool__(self):
         pass
 
+    def __lt__(self, other):
+        # return self < other
+        return all(a < b for a, b in zip(self.values, other.values))
+
     def zero_point(self):
-        return Point(*([0] * self.order))
+        return zero_point(self.order)
+
+
+def zero_point(order):
+    return Point(*([0] * order))
+
 
 directions = {
     'left': Point(-1, 0),
