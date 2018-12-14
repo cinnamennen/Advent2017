@@ -16,13 +16,6 @@ def get_input():
 
     return data
 
-
-def get_binary(a):
-    a_ = bin(a)[2:]
-    # z = a_.zfill(16)
-    return a_[-16:]
-
-
 def main():
     data = get_input()
     print(data)
