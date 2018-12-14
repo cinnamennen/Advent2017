@@ -43,37 +43,45 @@ class Memoized(object):
 
 
 class Point:
-    def __init__(self, x, y):
-        self.y = y
-        self.x = x
+    def __init__(self, *args):
+        ints = list(map(lambda v: isinstance(v, int), args))
+        if not all(ints):
+            raise TypeError('{} is not an integer'.format(args[ints.index(False)]))
+        self.values = args
+        self.order = len(args)
 
-    def distance_to(self, x, y):
-        return abs(self.x - x) + abs(self.y - y)
+    def distance_to(self, other):
+        return sum([abs(a - b) for a, b in zip(self.values, other.values)])
 
     def zero_distance(self):
-        return self.distance_to(0, 0)
+        return self.distance_to(self.zero_point())
 
     def __repr__(self):
-        return "<Point {}>".format(str(self))
+        return "Point{}".format(str(self))
 
     def __str__(self):
-        return "({},{})".format(self.x, self.y)
+        return "({})".format(','.join(map(str, self.values)))
 
     def __add__(self, other):
-        return Point(self.x + other.x, self.y + other.y)
+        return Point(*[a + b for a, b in zip(self.values, other.values)])
 
     def __sub__(self, other):
-        return Point(self.x - other.x, self.y - other.y)
+        return Point(*[a - b for a, b in zip(self.values, other.values)])
 
     def __eq__(self, other):
-        return (self.x == other.x) and (self.y == other.y)
+        return all(a == b for a, b in zip(self.values, other.values))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __iter__(self):
-        return iter((self.x, self.y))
+        return iter(self.values)
 
+    def __bool__(self):
+        pass
+
+    def zero_point(self):
+        return Point(*([0] * self.order))
 
 directions = {
     'left': Point(-1, 0),
