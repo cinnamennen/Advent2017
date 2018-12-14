@@ -28,8 +28,9 @@ def main():
     direction = file_directions['down']
     location = Point(0, data[0].index('|'))
     last = location - direction
-
+    i = 0
     while True:
+        i += 1
         forward = location + direction
         if safe_get(data, *forward) in ['|', '-'] + list(ascii_uppercase):
             last, location = location, forward
@@ -60,7 +61,7 @@ def main():
             print("Parsing error")
             break
 
-    print("".join(found))
+    print(i)
 
 
 if __name__ == '__main__':

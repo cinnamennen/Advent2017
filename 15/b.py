@@ -3,7 +3,7 @@ import re
 
 from tqdm import trange
 
-from helpers import memoized
+from helpers import Memoized
 
 pp = pprint.PrettyPrinter(indent=4)
 

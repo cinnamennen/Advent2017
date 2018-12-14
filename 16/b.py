@@ -4,7 +4,7 @@ from collections import deque
 from tqdm import trange
 
 from string import ascii_lowercase
-from helpers import memoized
+from helpers import Memoized
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -55,7 +55,7 @@ def main():
 
     print(d)
 
-@memoized
+@Memoized
 def run_round(in_d: str):
     # print("running on", in_d)
     global ops

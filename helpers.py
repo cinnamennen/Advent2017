@@ -2,7 +2,7 @@ import collections
 import functools
 
 
-class memoized(object):
+class Memoized(object):
     '''Decorator. Caches a function's return value each time it is called.
     If called later with the same arguments, the cached value is returned
     (not reevaluated).
@@ -40,3 +40,50 @@ class memoized(object):
 
     def success(self):
         print((self.hits / (self.hits + self.misses)) * 100)
+
+
+class Point:
+    def __init__(self, x, y):
+        self.y = y
+        self.x = x
+
+    def distance_to(self, x, y):
+        return abs(self.x - x) + abs(self.y - y)
+
+    def zero_distance(self):
+        return self.distance_to(0, 0)
+
+    def __repr__(self):
+        return "<Point {}>".format(str(self))
+
+    def __str__(self):
+        return "({},{})".format(self.x, self.y)
+
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Point(self.x - other.x, self.y - other.y)
+
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __iter__(self):
+        return iter((self.x, self.y))
+
+
+directions = {
+    'left': Point(-1, 0),
+    'right': Point(1, 0),
+    'up': Point(0, 1),
+    'down': Point(0, -1)
+}
+file_directions = {
+    'left': Point(0, -1),
+    'right': Point(0, 1),
+    'up': Point(-1, 0),
+    'down': Point(1, 0)
+}
