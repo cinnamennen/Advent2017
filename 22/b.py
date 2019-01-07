@@ -4,7 +4,6 @@ import re
 from collections import defaultdict
 
 from cinnamon_tools.point import Point
-from dataclasses import dataclass, field
 from tqdm import trange
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -12,13 +11,21 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class Node(enum.Enum):
     clean = '.'
+    weakened = 'W'
     infected = '#'
+    flagged = 'F'
 
     def __repr__(self):
         return str(self)
 
     def __str__(self):
         return self.value
+
+    def cycle(self):
+        c = list(Node).index(self) + len(list(Node))
+        rv = list(Node)[(c + 1) % len(list(Node))]
+        # print(f"{str(self)} -> {str(rv)}")
+        return rv
 
 
 class Turn(enum.Enum):
@@ -35,31 +42,37 @@ class Direction(enum.Enum):
     def turn(self, turn: Turn):
         c = list(Direction).index(self) + 4
         if turn == Turn.left:
-            return list(Direction)[(c - 1) % 4]
+            return list(Direction)[(c - 1) % len(list(Direction))]
         elif turn == Turn.right:
-            return list(Direction)[(c + 1) % 4]
+            return list(Direction)[(c + 1) % len(list(Direction))]
 
 
-@dataclass
 class Virus:
-    grid: defaultdict
-    position: Point = Point(0, 0)
-    direction: Direction = Direction.north
+    def __init__(self, grid, position=Point(0, 0), direction=Direction.north):
+        self.direction = direction
+        self.position = position
+        self.grid = grid
 
     def burst(self):
-        if self.grid[self.position] == Node.infected:
-            self.direction = self.direction.turn(Turn.right)
-        else:
-            self.direction = self.direction.turn(Turn.left)
-
         if self.grid[self.position] == Node.clean:
-            self.grid[self.position] = Node.infected
+            self.direction = self.direction.turn(Turn.left)
+        elif self.grid[self.position] == Node.weakened:
+            pass
+        elif self.grid[self.position] == Node.infected:
+            self.direction = self.direction.turn(Turn.right)
+        elif self.grid[self.position] == Node.flagged:
+            self.direction = self.direction.turn(Turn.left).turn(Turn.left)
+        else:
+            raise AttributeError
+
+        self.grid[self.position] = self.grid[self.position].cycle()
+
+        if self.grid[self.position] == Node.infected:
             rv = True
         else:
-            self.grid[self.position] = Node.clean
             rv = False
-
         self.position += self.direction.value
+
         return rv
 
     def __str__(self):
@@ -106,7 +119,7 @@ def main():
     # print(v)
     # exit()
     i = 0
-    for _ in range(10000):
+    for _ in trange(10000000):
         if v.burst():
             i += 1
         # print()
