@@ -82,7 +82,7 @@ def main():
     # start = "#..#/..../..../#..#"
     picture = translate_to_np(start)
 
-    for _ in range(5):
+    for _ in range(18):
         picture = enhance(picture, r)
 
     # print(picture)
