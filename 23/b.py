@@ -1,35 +1,35 @@
 a = 0
-b = 0x4f
+b = 79
 c = b
-b = 0x1a57c
-c = b + 0x4268
+b = 107900
+c = b + 17000
 
 while True:
-    d = 0x1
-    e = 0x2
+    d = 1
+    e = 2
     while True:
-        f = 0x2
+        f = 2
         while True:
             if f * e == b:
-                d = 0x0
+                d = 0
 
-            f = f + 0x1
+            f = f + 1
             if f == b:
                 break
             else:
                 continue
-        e = e + 0x1
+        e = e + 1
         if e == b:
             break
         else:
             continue
 
-    if d == 0x0:
-        a = a + 0x1
+    if d == 0:
+        a = a + 1
 
     if b == c:
         break
 
-    b = b + 0x11
+    b = b + 17
 
 print("Out of range: %d\n", a)
