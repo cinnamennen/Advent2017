@@ -38,8 +38,10 @@ def get_input():
 def main():
     data = get_input()
     # print(data)
-    paths = [sum(a + b for a, b in bridge) for bridge in gen_bridges(None, data)]
-    print(max(paths))
+    paths = [(len(bridge), sum(a + b for a, b in bridge)) for bridge in gen_bridges(None, data)]
+    paths.sort(key=lambda p: (p[0], p[1]), reverse=True)
+    # pp.pprint(paths)
+    print(paths[0][1])
 
 
 if __name__ == '__main__':
